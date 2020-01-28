@@ -1,0 +1,27 @@
+{
+    "defaultSeverity": "warning",
+    "extends": [
+        "tslint:recommended",
+        "tslint-config-prettier"
+    ],
+    "jsRules": {},
+    "rules": {
+        "quotemark": [
+            true,
+            "single"
+        ],
+        "no-restricted-globals": false,
+        "no-use-before-declare": false,
+        "completed-docs": false,
+        "variable-name": false,
+        "strict-boolean-expressions": false,
+        "match-default-export-name": false,
+        "no-inferrable-types": false,
+        "no-null-keyword": false,
+        "no-unbound-method": false
+    },
+    "include": [
+        "src",
+        "migrations"
+    ]
+}
