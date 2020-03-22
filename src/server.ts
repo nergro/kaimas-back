@@ -9,6 +9,7 @@ import passport from 'passport';
 import { logger } from './logging';
 import * as router from './routes';
 import { connectDB } from './db';
+import { auth } from './auth';
 
 connectDB();
 
@@ -20,8 +21,14 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use(passport.initialize());
+auth(passport);
 
 app.use('/api/', router.test);
+app.use('/api/user', router.user);
+
+app.all('*', (req, res) => {
+    res.status(404).json({ error: "Endpoint doesn't exist" });
+});
 
 if (process.env.NODE_ENV === 'local') {
     app.use(morgan('combined'));
