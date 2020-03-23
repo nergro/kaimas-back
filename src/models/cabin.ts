@@ -1,0 +1,43 @@
+import mongoose from 'mongoose';
+import { CabinType } from '../types/cabin';
+
+const Schema = mongoose.Schema;
+
+const CabinSchema = new Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    description: {
+        type: String,
+        required: true
+    },
+    price: {
+        type: Number,
+        required: true
+    },
+    capacity: {
+        type: Number,
+        required: true
+    },
+    images: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Image'
+        }
+    ],
+    benefits: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Benefit'
+        }
+    ],
+    availableDates: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'AvailableDate'
+        }
+    ]
+});
+
+export const Cabin = mongoose.model<CabinType>('Cabin', CabinSchema);
