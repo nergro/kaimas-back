@@ -27,10 +27,6 @@ const UserSchema = new Schema({
     userType: {
         type: String,
         required: true
-    },
-    isSubscribed: {
-        type: Boolean,
-        required: true
     }
 });
 

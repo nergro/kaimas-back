@@ -8,7 +8,6 @@ export interface UserType extends Document {
     password: string;
     phone: string;
     userType: string;
-    isSubscribed: boolean;
 }
 
 export interface UserJWTPayload {
