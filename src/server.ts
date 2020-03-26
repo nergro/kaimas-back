@@ -23,9 +23,9 @@ app.use(bodyParser.json());
 app.use(passport.initialize());
 auth(passport);
 
-app.use('/api/', router.test);
 app.use('/api/user', router.user);
 app.use('/api/subscribe', router.subscribe);
+app.use('/api/image', router.image);
 
 app.all('*', (req, res) => {
     res.status(404).json({ error: "Endpoint doesn't exist" });
