@@ -30,4 +30,8 @@ const UserSchema = new Schema({
     }
 });
 
+UserSchema.set('toJSON', {
+    virtuals: true
+});
+
 export const User = mongoose.model<UserType>('User', UserSchema);

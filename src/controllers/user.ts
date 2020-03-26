@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import { getEnvironmentVariableString } from '../services/environmentVariable';
 import { validationResult } from 'express-validator';
 import mongoose from 'mongoose';
+import { QueryParams } from '../types/queryParams';
 
 export const register = async (req: Request, res: Response) => {
     const { name, lastName, email, password, phone } = req.body as UserType;
@@ -88,6 +89,28 @@ export const login = async (req: Request, res: Response) => {
         );
     } catch (err) {
         console.error(err.message);
+        res.status(400).send({ error: 'Bad request' });
+    }
+};
+
+export const getAll = async (req: Request, res: Response) => {
+    try {
+        const { order, page, perPage, sort } = req.query as QueryParams;
+
+        let skip = 0;
+        if (page && perPage) {
+            skip = parseInt(page) * parseInt(perPage) - parseInt(perPage);
+        }
+
+        const totalUsers = await User.find();
+
+        const users = await User.find()
+            .skip(skip)
+            .limit(parseInt(perPage))
+            .sort({ [sort]: order });
+
+        res.status(200).json({ items: users, total: totalUsers.length });
+    } catch (error) {
         res.status(400).send({ error: 'Bad request' });
     }
 };

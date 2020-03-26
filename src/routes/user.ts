@@ -16,7 +16,9 @@ router.post(
     controller.login
 );
 
-router.get('/', isAuth, controller.getByToken);
+router.get('/one', isAuth, controller.getByToken);
+
+router.get('/', controller.getAll);
 
 router.put(
     '/edit',
