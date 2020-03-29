@@ -27,6 +27,7 @@ app.use('/api/user', router.user);
 app.use('/api/subscribe', router.subscribe);
 app.use('/api/image', router.image);
 app.use('/api/cabin', router.cabin);
+app.use('/api/availabledate', router.availableDate);
 
 app.all('*', (req, res) => {
     res.status(404).json({ error: "Endpoint doesn't exist" });

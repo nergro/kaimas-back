@@ -4,10 +4,6 @@ import { AvailableDateType } from '../types/availableDate';
 const Schema = mongoose.Schema;
 
 const AvailableDateSchema = new Schema({
-    description: {
-        type: String,
-        required: true
-    },
     serviceId: {
         type: Schema.Types.ObjectId,
         required: true,
@@ -22,6 +18,10 @@ const AvailableDateSchema = new Schema({
         type: Date,
         required: true
     }
+});
+
+AvailableDateSchema.set('toJSON', {
+    virtuals: true
 });
 
 export const AvailableDate = mongoose.model<AvailableDateType>(
