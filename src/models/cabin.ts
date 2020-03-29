@@ -40,4 +40,8 @@ const CabinSchema = new Schema({
     ]
 });
 
+CabinSchema.set('toJSON', {
+    virtuals: true
+});
+
 export const Cabin = mongoose.model<CabinType>('Cabin', CabinSchema);

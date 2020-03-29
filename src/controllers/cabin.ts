@@ -1,24 +1,200 @@
 import { Request, Response } from 'express';
 import { Cabin } from '../models/cabin';
+import { Image } from '../models/image';
 import { CabinType } from '../types/cabin';
+import { validationResult } from 'express-validator';
+import { QueryParams } from '../types/queryParams';
+import cloudinary from 'cloudinary';
 
-// export const create = async (req: Request, res: Response) => {
-//     const { name,description,price,capacity } = req.body as CabinType;
-//     try {
-//         const image = new Image({ imageUrl });
-//         await image.save();
-//         res.status(200).json(image);
-//     } catch (error) {
-//         res.status(400).send({ error: 'Bad request' });
-//     }
-// };
+cloudinary.v2.config({
+    cloud_name: 'dmckzsz3u',
+    api_key: '175283364765328',
+    api_secret: 'PlbLsvxZgx82FKJk3JiUUiKyosc'
+});
 
-// export const remove = async (req: Request, res: Response) => {
-//     const { id } = req.params;
-//     try {
-//         await Image.findByIdAndDelete(id);
-//         res.status(200).json('Image deleted');
-//     } catch (error) {
-//         res.status(400).send({ error: 'Bad request' });
-//     }
-// };
+export const create = async (req: Request, res: Response) => {
+    const {
+        name,
+        description,
+        price,
+        capacity,
+        images
+    } = req.body as CabinType;
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        const imageModels = await Promise.all(
+            images.map(image =>
+                new Image({
+                    imageUrl: image.imageUrl,
+                    imageId: image.imageId
+                }).save()
+            )
+        );
+        const cabin = new Cabin({
+            name,
+            description,
+            price,
+            capacity,
+            images: imageModels
+        });
+        await cabin.save();
+        res.status(200).json(cabin);
+    } catch (error) {
+        res.status(400).send({ error: 'Bad request' });
+    }
+};
+
+export const edit = async (req: Request, res: Response) => {
+    const {
+        name,
+        description,
+        price,
+        capacity,
+        images
+    } = req.body as CabinType;
+    const { id } = req.params;
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        const cabin = await Cabin.findById(id);
+        if (cabin) {
+            const deletedOldImages = await Promise.all(
+                cabin.images.map(image => Image.findByIdAndDelete(image))
+            );
+            deletedOldImages.forEach(image => {
+                image && removeImage(image.imageId);
+            });
+
+            const imageModels = await Promise.all(
+                images.map(image =>
+                    new Image({
+                        imageUrl: image.imageUrl,
+                        imageId: image.imageId
+                    }).save()
+                )
+            );
+
+            const update = {
+                name,
+                description,
+                price,
+                capacity,
+                images: imageModels
+            };
+            await Cabin.findByIdAndUpdate(id, update);
+            res.status(200).send({ msg: 'Cabin updated' });
+        } else {
+            res.status(404).json({ msg: 'Cabin not found' });
+        }
+    } catch (error) {
+        res.status(400).send({ error: 'Bad request' });
+    }
+};
+
+export const getAll = async (req: Request, res: Response) => {
+    try {
+        const { order, page, perPage, sort } = req.query as QueryParams;
+
+        let skip = 0;
+        if (page && perPage) {
+            skip = parseInt(page) * parseInt(perPage) - parseInt(perPage);
+        }
+
+        const totalCabins = await Cabin.find();
+
+        const cabins = await Cabin.find()
+            .skip(skip)
+            .limit(parseInt(perPage))
+            .sort({ [sort]: order });
+
+        res.status(200).json({ items: cabins, total: totalCabins.length });
+    } catch (error) {
+        res.status(400).send({ error: 'Bad request' });
+    }
+};
+
+export const getOne = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        const cabin = await Cabin.findById(id);
+
+        const images =
+            cabin && cabin.images
+                ? await Promise.all(
+                      cabin.images.map(image => Image.findById(image))
+                  )
+                : [];
+        if (cabin) {
+            res.status(200).json({
+                id: cabin.id,
+                name: cabin.name,
+                description: cabin.description,
+                price: cabin.price,
+                capacity: cabin.capacity,
+                images: images.map(x => (x ? x.imageUrl : ''))
+            });
+        } else {
+            res.status(404).json({ msg: 'Cabin not found' });
+        }
+    } catch (error) {
+        res.status(400).send({ error: 'Bad request' });
+    }
+};
+
+export const deleteOne = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        const cabin = await Cabin.findByIdAndDelete(id);
+
+        if (cabin) {
+            const deletedOldImages = await Promise.all(
+                cabin.images.map(image => Image.findByIdAndDelete(image))
+            );
+            deletedOldImages.forEach(image => {
+                image && removeImage(image.imageId);
+            });
+
+            res.status(200).json(cabin);
+        } else {
+            res.status(404).json({ msg: 'Cabin not found' });
+        }
+    } catch (error) {
+        res.status(400).send({ error: 'Bad request' });
+    }
+};
+
+export const deleteMany = async (req: Request, res: Response) => {
+    try {
+        const { ids } = req.body;
+
+        const cabins: CabinType[] | null = await Promise.all(
+            ids.map((id: number) => Cabin.findByIdAndDelete(id))
+        );
+
+        cabins.forEach(async cabin => {
+            if (cabin) {
+                const deletedOldImages = await Promise.all(
+                    cabin.images.map(image => Image.findByIdAndDelete(image))
+                );
+                deletedOldImages.forEach(image => {
+                    image && removeImage(image.imageId);
+                });
+            }
+        });
+
+        res.status(200).json(cabins);
+    } catch (error) {
+        res.status(400).send({ error: 'Bad request' });
+    }
+};
+
+const removeImage = (removableImageId: string) => {
+    cloudinary.v2.uploader.destroy(removableImageId);
+};
