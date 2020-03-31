@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { Cabin } from '../models/cabin';
+import { Activity } from '../models/activity';
 import { Image } from '../models/image';
-import { CabinType } from '../types/cabin';
+import { ActivityType } from '../types/activity';
 import { validationResult } from 'express-validator';
 import { QueryParams } from '../types/queryParams';
 import cloudinary from 'cloudinary';
@@ -11,9 +11,10 @@ export const create = async (req: Request, res: Response) => {
         name,
         description,
         price,
+        category,
         capacity,
         images
-    } = req.body as CabinType;
+    } = req.body as ActivityType;
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -27,15 +28,16 @@ export const create = async (req: Request, res: Response) => {
                 }).save()
             )
         );
-        const cabin = new Cabin({
+        const activity = new Activity({
             name,
             description,
             price,
             capacity,
+            category,
             images: imageModels
         });
-        await cabin.save();
-        res.status(200).json(cabin);
+        await activity.save();
+        res.status(200).json(activity);
     } catch (error) {
         res.status(400).send({ error: 'Bad request' });
     }
@@ -47,19 +49,21 @@ export const edit = async (req: Request, res: Response) => {
         description,
         price,
         capacity,
+        category,
         images
-    } = req.body as CabinType;
+    } = req.body as ActivityType;
     const { id } = req.params;
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
-        const cabin = await Cabin.findById(id);
-        if (cabin) {
+        const activity = await Activity.findById(id);
+        if (activity) {
             await Promise.all(
-                cabin.images.map(image => Image.findByIdAndDelete(image))
+                activity.images.map(image => Image.findByIdAndDelete(image))
             );
+
             const imageModels = await Promise.all(
                 images.map(image =>
                     new Image({
@@ -74,12 +78,13 @@ export const edit = async (req: Request, res: Response) => {
                 description,
                 price,
                 capacity,
+                category,
                 images: imageModels
             };
-            await Cabin.findByIdAndUpdate(id, update);
-            res.status(200).send({ msg: 'Cabin updated' });
+            await Activity.findByIdAndUpdate(id, update);
+            res.status(200).send({ msg: 'Activity updated' });
         } else {
-            res.status(404).json({ msg: 'Cabin not found' });
+            res.status(404).json({ msg: 'Activity not found' });
         }
     } catch (error) {
         res.status(400).send({ error: 'Bad request' });
@@ -95,14 +100,17 @@ export const getAll = async (req: Request, res: Response) => {
             skip = parseInt(page) * parseInt(perPage) - parseInt(perPage);
         }
 
-        const totalCabins = await Cabin.find();
+        const totalActivities = await Activity.find();
 
-        const cabins = await Cabin.find()
+        const activities = await Activity.find()
             .skip(skip)
             .limit(parseInt(perPage))
             .sort({ [sort]: order });
 
-        res.status(200).json({ items: cabins, total: totalCabins.length });
+        res.status(200).json({
+            items: activities,
+            total: totalActivities.length
+        });
     } catch (error) {
         res.status(400).send({ error: 'Bad request' });
     }
@@ -112,21 +120,22 @@ export const getOne = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
-        const cabin = await Cabin.findById(id);
+        const activity = await Activity.findById(id);
 
         const images =
-            cabin && cabin.images
+            activity && activity.images
                 ? await Promise.all(
-                      cabin.images.map(image => Image.findById(image))
+                      activity.images.map(image => Image.findById(image))
                   )
                 : [];
-        if (cabin) {
+        if (activity) {
             res.status(200).json({
-                id: cabin.id,
-                name: cabin.name,
-                description: cabin.description,
-                price: cabin.price,
-                capacity: cabin.capacity,
+                id: activity.id,
+                name: activity.name,
+                description: activity.description,
+                price: activity.price,
+                capacity: activity.capacity,
+                category: activity.category,
                 images: images.map(x => ({
                     imageUrl: x ? x.imageUrl : '',
                     imageId: x ? x.imageId : ''
@@ -144,17 +153,17 @@ export const deleteOne = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
-        const cabin = await Cabin.findByIdAndDelete(id);
+        const activity = await Activity.findByIdAndDelete(id);
 
-        if (cabin) {
+        if (activity) {
             const deletedOldImages = await Promise.all(
-                cabin.images.map(image => Image.findByIdAndDelete(image))
+                activity.images.map(image => Image.findByIdAndDelete(image))
             );
             deletedOldImages.forEach(image => {
                 image && removeImage(image.imageId);
             });
 
-            res.status(200).json(cabin);
+            res.status(200).json(activity);
         } else {
             res.status(404).json({ msg: 'Cabin not found' });
         }
@@ -167,14 +176,14 @@ export const deleteMany = async (req: Request, res: Response) => {
     try {
         const { ids } = req.body;
 
-        const cabins: CabinType[] | null = await Promise.all(
-            ids.map((id: number) => Cabin.findByIdAndDelete(id))
+        const activities: ActivityType[] | null = await Promise.all(
+            ids.map((id: number) => Activity.findByIdAndDelete(id))
         );
 
-        cabins.forEach(async cabin => {
-            if (cabin) {
+        activities.forEach(async activity => {
+            if (activity) {
                 const deletedOldImages = await Promise.all(
-                    cabin.images.map(image => Image.findByIdAndDelete(image))
+                    activity.images.map(image => Image.findByIdAndDelete(image))
                 );
                 deletedOldImages.forEach(image => {
                     image && removeImage(image.imageId);
@@ -182,7 +191,7 @@ export const deleteMany = async (req: Request, res: Response) => {
             }
         });
 
-        res.status(200).json(cabins);
+        res.status(200).json(activities);
     } catch (error) {
         res.status(400).send({ error: 'Bad request' });
     }

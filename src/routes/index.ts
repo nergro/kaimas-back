@@ -3,3 +3,5 @@ export { router as subscribe } from './subscribe';
 export { router as image } from './image';
 export { router as cabin } from './cabin';
 export { router as availableDate } from './availableDate';
+export { router as benefit } from './benefit';
+export { router as activity } from './activity';

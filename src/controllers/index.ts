@@ -3,11 +3,15 @@ import * as subscribeController from './subscribe';
 import * as imageController from './image';
 import * as cabinController from './cabin';
 import * as availableDateController from './availableDate';
+import * as benefitController from './benefit';
+import * as activityController from './activity';
 
 export {
     clientController,
     subscribeController,
     imageController,
     cabinController,
-    availableDateController
+    availableDateController,
+    benefitController,
+    activityController
 };

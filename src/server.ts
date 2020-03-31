@@ -10,11 +10,19 @@ import { logger } from './logging';
 import * as router from './routes';
 import { connectDB } from './db';
 import { auth } from './auth';
+import cloudinary from 'cloudinary';
+import { getEnvironmentVariableString } from './services/environmentVariable';
 
 connectDB();
 
 const app: Application = express();
 const port: string = process.env.PORT as string;
+
+cloudinary.v2.config({
+    cloud_name: getEnvironmentVariableString('CLOUDINARY_CLOUD_NAME'),
+    api_key: getEnvironmentVariableString('CLOUDINARY_API_KEY'),
+    api_secret: getEnvironmentVariableString('CLOUDINARY_API_SECRET')
+});
 
 app.use(cors());
 
@@ -28,6 +36,8 @@ app.use('/api/subscribe', router.subscribe);
 app.use('/api/image', router.image);
 app.use('/api/cabin', router.cabin);
 app.use('/api/availabledate', router.availableDate);
+app.use('/api/benefit', router.benefit);
+app.use('/api/activity', router.activity);
 
 app.all('*', (req, res) => {
     res.status(404).json({ error: "Endpoint doesn't exist" });
