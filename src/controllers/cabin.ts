@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Cabin } from '../models/cabin';
 import { Image } from '../models/image';
+import { AvailableDate } from '../models/availableDate';
 import { CabinType } from '../types/cabin';
 import { validationResult } from 'express-validator';
 import { QueryParams } from '../types/queryParams';
@@ -120,6 +121,7 @@ export const getOne = async (req: Request, res: Response) => {
                       cabin.images.map(image => Image.findById(image))
                   )
                 : [];
+        const availableDates = await AvailableDate.find({ serviceId: id });
         if (cabin) {
             res.status(200).json({
                 id: cabin.id,
@@ -130,7 +132,8 @@ export const getOne = async (req: Request, res: Response) => {
                 images: images.map(x => ({
                     imageUrl: x ? x.imageUrl : '',
                     imageId: x ? x.imageId : ''
-                }))
+                })),
+                availableDates: availableDates.map(date => date.id)
             });
         } else {
             res.status(404).json({ msg: 'Cabin not found' });

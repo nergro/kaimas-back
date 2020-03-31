@@ -8,8 +8,7 @@ export const connectDB = async () => {
             useNewUrlParser: true,
             useCreateIndex: true,
             useFindAndModify: false,
-            useUnifiedTopology: true,
-            dbName: 'kaimas'
+            useUnifiedTopology: true
         });
         console.log('MongoDB Connected...');
     } catch (err) {

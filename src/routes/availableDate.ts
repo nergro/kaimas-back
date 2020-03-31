@@ -7,8 +7,9 @@ export const router: Router = express.Router();
 
 router.post(
     '/',
-    check('serviceId', 'ServiceId is required').exists(),
-    check('date', 'date is required').exists(),
+    check('serviceId', 'serviceId is required').exists(),
+    check('serviceType', 'serviceType is required').exists(),
+    check('dateChunks', 'dateChunks is required').exists(),
     controller.create
 );
 

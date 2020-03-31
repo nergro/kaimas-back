@@ -6,3 +6,9 @@ export interface AvailableDateType extends Document {
     onModel: string;
     date: string;
 }
+
+export interface AvailableDateRequestBody {
+    serviceId: string;
+    serviceType: string;
+    dateChunks: string[];
+}

@@ -1,19 +1,30 @@
 import { Request, Response } from 'express';
 import { AvailableDate } from '../models/availableDate';
-import { AvailableDateType } from '../types/availableDate';
+import { AvailableDateRequestBody } from '../types/availableDate';
 import { QueryParams } from '../types/queryParams';
 import { validationResult } from 'express-validator';
 
 export const create = async (req: Request, res: Response) => {
-    const { serviceId, date, onModel } = req.body as AvailableDateType;
+    const {
+        serviceId,
+        dateChunks,
+        serviceType
+    } = req.body as AvailableDateRequestBody;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
     try {
-        const aDate = new AvailableDate({ serviceId, date, onModel });
-        await aDate.save();
-        res.status(200).json(aDate);
+        const dates = await Promise.all(
+            dateChunks.map(date =>
+                new AvailableDate({
+                    serviceId,
+                    date,
+                    onModel: serviceType
+                }).save()
+            )
+        );
+        res.status(200).json(dates);
     } catch (error) {
         console.log(error);
         res.status(400).send({ error: 'Bad request' });
