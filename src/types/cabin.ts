@@ -10,6 +10,6 @@ export interface CabinType extends Document {
     price: number;
     capacity: number;
     images: ImageType[];
-    benefits: BenefitType[];
+    benefits: string[];
     availableDates: AvailableDateType[];
 }

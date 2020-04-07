@@ -5,6 +5,7 @@ import { ActivityType } from '../types/activity';
 import { validationResult } from 'express-validator';
 import { QueryParams } from '../types/queryParams';
 import cloudinary from 'cloudinary';
+import { AvailableDate } from '../models/availableDate';
 
 export const create = async (req: Request, res: Response) => {
     const {
@@ -13,7 +14,8 @@ export const create = async (req: Request, res: Response) => {
         price,
         category,
         capacity,
-        images
+        images,
+        benefits
     } = req.body as ActivityType;
     try {
         const errors = validationResult(req);
@@ -21,7 +23,7 @@ export const create = async (req: Request, res: Response) => {
             return res.status(400).json({ errors: errors.array() });
         }
         const imageModels = await Promise.all(
-            images.map(image =>
+            images.map((image) =>
                 new Image({
                     imageUrl: image.imageUrl,
                     imageId: image.imageId
@@ -34,7 +36,8 @@ export const create = async (req: Request, res: Response) => {
             price,
             capacity,
             category,
-            images: imageModels
+            images: imageModels,
+            benefits
         });
         await activity.save();
         res.status(200).json(activity);
@@ -50,7 +53,8 @@ export const edit = async (req: Request, res: Response) => {
         price,
         capacity,
         category,
-        images
+        images,
+        benefits
     } = req.body as ActivityType;
     const { id } = req.params;
     try {
@@ -61,11 +65,11 @@ export const edit = async (req: Request, res: Response) => {
         const activity = await Activity.findById(id);
         if (activity) {
             await Promise.all(
-                activity.images.map(image => Image.findByIdAndDelete(image))
+                activity.images.map((image) => Image.findByIdAndDelete(image))
             );
 
             const imageModels = await Promise.all(
-                images.map(image =>
+                images.map((image) =>
                     new Image({
                         imageUrl: image.imageUrl,
                         imageId: image.imageId
@@ -79,7 +83,8 @@ export const edit = async (req: Request, res: Response) => {
                 price,
                 capacity,
                 category,
-                images: imageModels
+                images: imageModels,
+                benefits
             };
             await Activity.findByIdAndUpdate(id, update);
             res.status(200).send({ msg: 'Activity updated' });
@@ -125,9 +130,12 @@ export const getOne = async (req: Request, res: Response) => {
         const images =
             activity && activity.images
                 ? await Promise.all(
-                      activity.images.map(image => Image.findById(image))
+                      activity.images.map((image) => Image.findById(image))
                   )
                 : [];
+
+        const availableDates = await AvailableDate.find({ serviceId: id });
+
         if (activity) {
             res.status(200).json({
                 id: activity.id,
@@ -136,10 +144,12 @@ export const getOne = async (req: Request, res: Response) => {
                 price: activity.price,
                 capacity: activity.capacity,
                 category: activity.category,
-                images: images.map(x => ({
+                images: images.map((x) => ({
                     imageUrl: x ? x.imageUrl : '',
                     imageId: x ? x.imageId : ''
-                }))
+                })),
+                availableDates: availableDates.map((date) => date.id),
+                benefits: activity.benefits
             });
         } else {
             res.status(404).json({ msg: 'Cabin not found' });
@@ -157,9 +167,9 @@ export const deleteOne = async (req: Request, res: Response) => {
 
         if (activity) {
             const deletedOldImages = await Promise.all(
-                activity.images.map(image => Image.findByIdAndDelete(image))
+                activity.images.map((image) => Image.findByIdAndDelete(image))
             );
-            deletedOldImages.forEach(image => {
+            deletedOldImages.forEach((image) => {
                 image && removeImage(image.imageId);
             });
 
@@ -180,12 +190,14 @@ export const deleteMany = async (req: Request, res: Response) => {
             ids.map((id: number) => Activity.findByIdAndDelete(id))
         );
 
-        activities.forEach(async activity => {
+        activities.forEach(async (activity) => {
             if (activity) {
                 const deletedOldImages = await Promise.all(
-                    activity.images.map(image => Image.findByIdAndDelete(image))
+                    activity.images.map((image) =>
+                        Image.findByIdAndDelete(image)
+                    )
                 );
-                deletedOldImages.forEach(image => {
+                deletedOldImages.forEach((image) => {
                     image && removeImage(image.imageId);
                 });
             }

@@ -6,6 +6,7 @@ import { CabinType } from '../types/cabin';
 import { validationResult } from 'express-validator';
 import { QueryParams } from '../types/queryParams';
 import cloudinary from 'cloudinary';
+import { Benefit } from '../models/benefit';
 
 export const create = async (req: Request, res: Response) => {
     const {
@@ -13,7 +14,8 @@ export const create = async (req: Request, res: Response) => {
         description,
         price,
         capacity,
-        images
+        images,
+        benefits
     } = req.body as CabinType;
     try {
         const errors = validationResult(req);
@@ -21,7 +23,7 @@ export const create = async (req: Request, res: Response) => {
             return res.status(400).json({ errors: errors.array() });
         }
         const imageModels = await Promise.all(
-            images.map(image =>
+            images.map((image) =>
                 new Image({
                     imageUrl: image.imageUrl,
                     imageId: image.imageId
@@ -33,11 +35,13 @@ export const create = async (req: Request, res: Response) => {
             description,
             price,
             capacity,
-            images: imageModels
+            images: imageModels,
+            benefits
         });
         await cabin.save();
         res.status(200).json(cabin);
     } catch (error) {
+        console.log(error);
         res.status(400).send({ error: 'Bad request' });
     }
 };
@@ -48,7 +52,8 @@ export const edit = async (req: Request, res: Response) => {
         description,
         price,
         capacity,
-        images
+        images,
+        benefits
     } = req.body as CabinType;
     const { id } = req.params;
     try {
@@ -59,10 +64,10 @@ export const edit = async (req: Request, res: Response) => {
         const cabin = await Cabin.findById(id);
         if (cabin) {
             await Promise.all(
-                cabin.images.map(image => Image.findByIdAndDelete(image))
+                cabin.images.map((image) => Image.findByIdAndDelete(image))
             );
             const imageModels = await Promise.all(
-                images.map(image =>
+                images.map((image) =>
                     new Image({
                         imageUrl: image.imageUrl,
                         imageId: image.imageId
@@ -75,7 +80,8 @@ export const edit = async (req: Request, res: Response) => {
                 description,
                 price,
                 capacity,
-                images: imageModels
+                images: imageModels,
+                benefits
             };
             await Cabin.findByIdAndUpdate(id, update);
             res.status(200).send({ msg: 'Cabin updated' });
@@ -118,10 +124,12 @@ export const getOne = async (req: Request, res: Response) => {
         const images =
             cabin && cabin.images
                 ? await Promise.all(
-                      cabin.images.map(image => Image.findById(image))
+                      cabin.images.map((image) => Image.findById(image))
                   )
                 : [];
+
         const availableDates = await AvailableDate.find({ serviceId: id });
+
         if (cabin) {
             res.status(200).json({
                 id: cabin.id,
@@ -129,11 +137,12 @@ export const getOne = async (req: Request, res: Response) => {
                 description: cabin.description,
                 price: cabin.price,
                 capacity: cabin.capacity,
-                images: images.map(x => ({
+                images: images.map((x) => ({
                     imageUrl: x ? x.imageUrl : '',
                     imageId: x ? x.imageId : ''
                 })),
-                availableDates: availableDates.map(date => date.id)
+                availableDates: availableDates.map((date) => date.id),
+                benefits: cabin.benefits
             });
         } else {
             res.status(404).json({ msg: 'Cabin not found' });
@@ -151,9 +160,9 @@ export const deleteOne = async (req: Request, res: Response) => {
 
         if (cabin) {
             const deletedOldImages = await Promise.all(
-                cabin.images.map(image => Image.findByIdAndDelete(image))
+                cabin.images.map((image) => Image.findByIdAndDelete(image))
             );
-            deletedOldImages.forEach(image => {
+            deletedOldImages.forEach((image) => {
                 image && removeImage(image.imageId);
             });
 
@@ -174,12 +183,12 @@ export const deleteMany = async (req: Request, res: Response) => {
             ids.map((id: number) => Cabin.findByIdAndDelete(id))
         );
 
-        cabins.forEach(async cabin => {
+        cabins.forEach(async (cabin) => {
             if (cabin) {
                 const deletedOldImages = await Promise.all(
-                    cabin.images.map(image => Image.findByIdAndDelete(image))
+                    cabin.images.map((image) => Image.findByIdAndDelete(image))
                 );
-                deletedOldImages.forEach(image => {
+                deletedOldImages.forEach((image) => {
                     image && removeImage(image.imageId);
                 });
             }

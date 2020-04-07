@@ -11,6 +11,12 @@ router.post(
     controller.create
 );
 
+router.put(
+    '/:id',
+    check('description', 'Description is required').exists(),
+    controller.edit
+);
+
 router.get('/', controller.getAll);
 
 router.get('/:id', controller.getOne);
