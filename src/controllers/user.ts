@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { User } from '../models/user';
-import { UserType, UserJWTPayload } from '../types/user';
+import { UserInterface, UserJWTPayload } from '../types/user';
 import jwt from 'jsonwebtoken';
 import { getEnvironmentVariableString } from '../services/environmentVariable';
 import { validationResult } from 'express-validator';
@@ -9,7 +9,14 @@ import mongoose from 'mongoose';
 import { QueryParams } from '../types/queryParams';
 
 export const register = async (req: Request, res: Response) => {
-    const { name, lastName, email, password, phone } = req.body as UserType;
+    const {
+        name,
+        lastName,
+        email,
+        password,
+        phone,
+        userType
+    } = req.body as UserInterface;
     try {
         let user = await User.findOne({ email });
 
@@ -28,7 +35,7 @@ export const register = async (req: Request, res: Response) => {
             email,
             password: hashedPassword,
             phone,
-            userType: 'someuser'
+            userType: userType || 'Client'
         });
 
         await user.save();
@@ -47,6 +54,42 @@ export const register = async (req: Request, res: Response) => {
                 res.json({ token });
             }
         );
+    } catch (error) {
+        res.status(400).send({ error: 'Bad request' });
+    }
+};
+
+export const createManager = async (req: Request, res: Response) => {
+    const {
+        name,
+        lastName,
+        email,
+        password,
+        phone
+    } = req.body as UserInterface;
+    try {
+        let user = await User.findOne({ email });
+
+        if (user) {
+            return res
+                .status(409)
+                .json({ errors: [{ msg: 'User already exists' }] });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        user = new User({
+            name,
+            lastName,
+            email,
+            password: hashedPassword,
+            phone,
+            userType: 'Manager'
+        });
+
+        await user.save();
+        res.status(200).json(user);
     } catch (error) {
         res.status(400).send({ error: 'Bad request' });
     }
@@ -93,7 +136,7 @@ export const login = async (req: Request, res: Response) => {
     }
 };
 
-export const getAll = async (req: Request, res: Response) => {
+export const getAllManagers = async (req: Request, res: Response) => {
     try {
         const { order, page, perPage, sort } = req.query as QueryParams;
 
@@ -102,9 +145,9 @@ export const getAll = async (req: Request, res: Response) => {
             skip = parseInt(page) * parseInt(perPage) - parseInt(perPage);
         }
 
-        const totalUsers = await User.find();
+        const totalUsers = await User.find({ userType: 'Manager' });
 
-        const users = await User.find()
+        const users = await User.find({ userType: 'Manager' })
             .skip(skip)
             .limit(parseInt(perPage))
             .sort({ [sort]: order });
@@ -115,12 +158,31 @@ export const getAll = async (req: Request, res: Response) => {
     }
 };
 
+export const getOne = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const user = await User.findById(id);
+        if (user) {
+            res.status(200).json({
+                name: user.name,
+                lastName: user.lastName,
+                email: user.email,
+                phone: user.phone
+            });
+        } else {
+            res.status(404).send('User not found');
+        }
+    } catch (error) {
+        res.status(400).send({ error: 'Bad request' });
+    }
+};
+
 export const getByToken = async (req: Request, res: Response) => {
     try {
         if (req.user === undefined) {
             return res.status(401).send('Unauthorized');
         }
-        const { email, id } = req.user as UserType;
+        const { email, id } = req.user as UserInterface;
         res.status(200).send({ id, email });
     } catch (error) {
         res.status(400).send({ error: 'Bad request' });
@@ -132,7 +194,7 @@ export const edit = async (req: Request, res: Response) => {
     if (req.user === undefined) {
         return res.status(401).send('Unauthorized');
     }
-    const { id } = req.user as UserType;
+    const { id } = req.user as UserInterface;
 
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -149,6 +211,30 @@ export const edit = async (req: Request, res: Response) => {
         res.status(200).send({ msg: 'User updated' });
     } catch (err) {
         console.error(err.message);
+        res.status(400).send({ error: 'Bad request' });
+    }
+};
+
+export const deleteOne = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const user = await User.findByIdAndDelete(id);
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(400).send({ error: 'Bad request' });
+    }
+};
+
+export const deleteMany = async (req: Request, res: Response) => {
+    const { ids } = req.body;
+    try {
+        const users = await Promise.all(
+            ids.map((id: number) => User.findByIdAndDelete(id))
+        );
+
+        res.status(200).json(users);
+    } catch (error) {
+        console.log(error);
         res.status(400).send({ error: 'Bad request' });
     }
 };

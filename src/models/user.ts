@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { UserType } from '../types/user';
+import { UserInterface } from '../types/user';
 
 const Schema = mongoose.Schema;
 
@@ -26,7 +26,8 @@ const UserSchema = new Schema({
     },
     userType: {
         type: String,
-        required: true
+        required: true,
+        enum: ['Client', 'Manager', 'Admin']
     }
 });
 
@@ -34,4 +35,4 @@ UserSchema.set('toJSON', {
     virtuals: true
 });
 
-export const User = mongoose.model<UserType>('User', UserSchema);
+export const User = mongoose.model<UserInterface>('User', UserSchema);

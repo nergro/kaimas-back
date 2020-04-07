@@ -11,7 +11,7 @@ export interface ActivityType extends Document {
     description: string;
     price: number;
     capacity: number;
-    category: ActivityCategory;
+    category: string;
     images: ImageType[];
     benefits: BenefitType[];
     availableDates: AvailableDateType[];

@@ -1,13 +1,14 @@
 import { Document } from 'mongoose';
 
-export interface UserType extends Document {
+export type UserType = 'Client' | 'Manager' | 'Admin';
+export interface UserInterface extends Document {
     id: string;
     name: string;
     lastName: string;
     email: string;
     password: string;
     phone: string;
-    userType: string;
+    userType: UserType;
 }
 
 export interface UserJWTPayload {

@@ -16,16 +16,20 @@ router.post(
     controller.login
 );
 
+router.post('/createmanager', controller.createManager);
+
 router.get('/one', isAuth, controller.getByToken);
 
-router.get('/', controller.getAll);
+router.get('/', controller.getAllManagers);
+router.get('/:id', controller.getOne);
 
 router.put(
     '/edit',
-
     isAuth,
-    check('password', 'Password is required')
-        .not()
-        .isEmpty(),
+    check('password', 'Password is required').not().isEmpty(),
     controller.edit
 );
+
+router.delete('/:id', controller.deleteOne);
+
+router.delete('/', controller.deleteMany);

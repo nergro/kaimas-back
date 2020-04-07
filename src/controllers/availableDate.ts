@@ -16,7 +16,7 @@ export const create = async (req: Request, res: Response) => {
     }
     try {
         const dates = await Promise.all(
-            dateChunks.map(date =>
+            dateChunks.map((date) =>
                 new AvailableDate({
                     serviceId,
                     date,
@@ -63,6 +63,7 @@ export const getAll = async (req: Request, res: Response) => {
     }
 };
 
+// TODO
 export const deleteOne = async (req: Request, res: Response) => {
     const { id } = req.params;
 };

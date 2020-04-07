@@ -2,7 +2,7 @@ import { PassportStatic } from 'passport';
 import passportJWT, { ExtractJwt } from 'passport-jwt';
 
 import { logger } from './logging';
-import { UserType, UserJWTPayload } from './types/user';
+import { UserInterface, UserJWTPayload } from './types/user';
 import { User } from './models/user';
 
 export const auth: (passportRef: PassportStatic) => void = (
@@ -16,7 +16,7 @@ export const auth: (passportRef: PassportStatic) => void = (
             },
             async (
                 jwtPayload: UserJWTPayload,
-                done: (err: Error | null, user?: UserType | null) => void
+                done: (err: Error | null, user?: UserInterface | null) => void
             ): Promise<void> => {
                 try {
                     const user = await User.findById(jwtPayload.id);

@@ -5,6 +5,7 @@ import * as cabinController from './cabin';
 import * as availableDateController from './availableDate';
 import * as benefitController from './benefit';
 import * as activityController from './activity';
+import * as activityCategoryController from './activityCategory';
 
 export {
     clientController,
@@ -13,5 +14,6 @@ export {
     cabinController,
     availableDateController,
     benefitController,
-    activityController
+    activityController,
+    activityCategoryController
 };

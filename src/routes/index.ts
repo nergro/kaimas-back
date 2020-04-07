@@ -5,3 +5,4 @@ export { router as cabin } from './cabin';
 export { router as availableDate } from './availableDate';
 export { router as benefit } from './benefit';
 export { router as activity } from './activity';
+export { router as activityCategory } from './activityCategory';

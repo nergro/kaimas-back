@@ -8,7 +8,6 @@ export const router: Router = express.Router();
 router.post(
     '/',
     check('name', 'Name is required').exists(),
-    check('category', 'Category is required').exists(),
     check('description', 'Description is required').exists(),
     check('price', 'Price is required').exists(),
     check('capacity', 'Capacity is required').exists(),
@@ -18,7 +17,6 @@ router.post(
 router.put(
     '/:id',
     check('name', 'Name is required').exists(),
-    check('category', 'Category is required').exists(),
     check('description', 'Description is required').exists(),
     check('price', 'Price is required').exists(),
     check('capacity', 'Capacity is required').exists(),

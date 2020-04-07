@@ -13,8 +13,8 @@ const ActivitySchema = new Schema({
         required: true
     },
     category: {
-        type: String,
-        required: true
+        type: Schema.Types.ObjectId,
+        ref: 'ActivityCategory'
     },
     price: {
         type: Number,
