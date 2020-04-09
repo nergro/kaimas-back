@@ -7,15 +7,20 @@ import { getEnvironmentVariableString } from '../services/environmentVariable';
 import { validationResult } from 'express-validator';
 import mongoose from 'mongoose';
 import { QueryParams } from '../types/queryParams';
+import { sendPasswordToManager } from '../services/mailer';
 
 export const register = async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
     const {
         name,
         lastName,
         email,
         password,
-        phone,
-        userType
+        phone
     } = req.body as UserInterface;
     try {
         let user = await User.findOne({ email });
@@ -35,7 +40,7 @@ export const register = async (req: Request, res: Response) => {
             email,
             password: hashedPassword,
             phone,
-            userType: userType || 'Client'
+            userType: 'Client'
         });
 
         await user.save();
@@ -60,6 +65,10 @@ export const register = async (req: Request, res: Response) => {
 };
 
 export const createManager = async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     const {
         name,
         lastName,
@@ -87,7 +96,7 @@ export const createManager = async (req: Request, res: Response) => {
             phone,
             userType: 'Manager'
         });
-
+        sendPasswordToManager(email, password);
         await user.save();
         res.status(200).json(user);
     } catch (error) {
@@ -103,7 +112,7 @@ export const login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     try {
-        let user = await User.findOne({ email });
+        const user = await User.findOne({ email });
         if (!user) {
             return res
                 .status(400)
@@ -127,7 +136,12 @@ export const login = async (req: Request, res: Response) => {
             { expiresIn: getEnvironmentVariableString('JWT_EXPIRETIME') },
             (err, token) => {
                 if (err) throw err;
-                res.json({ token });
+                res.json({
+                    id: user.id,
+                    name: user.name,
+                    userType: user.userType,
+                    token
+                });
             }
         );
     } catch (err) {
@@ -182,9 +196,10 @@ export const getByToken = async (req: Request, res: Response) => {
         if (req.user === undefined) {
             return res.status(401).send('Unauthorized');
         }
-        const { email, id } = req.user as UserInterface;
-        res.status(200).send({ id, email });
+        const { id, userType } = req.user as UserInterface;
+        res.status(200).send({ id, userType });
     } catch (error) {
+        console.log(error);
         res.status(400).send({ error: 'Bad request' });
     }
 };

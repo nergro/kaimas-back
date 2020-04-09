@@ -61,3 +61,19 @@ export const sendNewsletters = async (
         console.log('[[ mailError ]]]', err);
     }
 };
+
+export const sendPasswordToManager = async (
+    mail: string,
+    password: string
+): Promise<void> => {
+    const mailOptions: MailOptions = getMailOptions(
+        `<h1>Welcome!</h1>
+        <p><strong>You have been created by administrator</strong><p>
+        <p><strong>Your temporary password: </strong> ${password} </p>
+        `,
+        'Welcome',
+        mail
+    );
+
+    await transporter.sendMail(mailOptions);
+};
