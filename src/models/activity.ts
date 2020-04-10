@@ -35,12 +35,6 @@ const ActivitySchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: 'Benefit'
         }
-    ],
-    availableDates: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'AvailableDate'
-        }
     ]
 });
 

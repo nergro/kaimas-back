@@ -115,14 +115,14 @@ export const login = async (req: Request, res: Response) => {
         const user = await User.findOne({ email });
         if (!user) {
             return res
-                .status(400)
+                .status(401)
                 .json({ errors: [{ msg: 'Invalid Credentials' }] });
         }
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
             return res
-                .status(400)
+                .status(401)
                 .json({ errors: [{ msg: 'Invalid Credentials' }] });
         }
         const payload: UserJWTPayload = {
@@ -178,6 +178,7 @@ export const getOne = async (req: Request, res: Response) => {
         const user = await User.findById(id);
         if (user) {
             res.status(200).json({
+                id: user.id,
                 name: user.name,
                 lastName: user.lastName,
                 email: user.email,

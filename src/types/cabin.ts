@@ -1,7 +1,5 @@
 import { Document } from 'mongoose';
 import { ImageType } from './image';
-import { BenefitType } from './benefit';
-import { AvailableDateType } from './availableDate';
 
 export interface CabinType extends Document {
     id: string;
@@ -11,5 +9,4 @@ export interface CabinType extends Document {
     capacity: number;
     images: ImageType[];
     benefits: string[];
-    availableDates: AvailableDateType[];
 }

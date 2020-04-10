@@ -1,7 +1,5 @@
 import { Document } from 'mongoose';
 import { ImageType } from './image';
-import { BenefitType } from './benefit';
-import { AvailableDateType } from './availableDate';
 
 export type ActivityCategory = 'water' | 'active' | 'relax';
 
@@ -13,6 +11,5 @@ export interface ActivityType extends Document {
     capacity: number;
     category: string;
     images: ImageType[];
-    benefits: BenefitType[];
-    availableDates: AvailableDateType[];
+    benefits: string[];
 }

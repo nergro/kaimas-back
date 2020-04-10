@@ -63,11 +63,25 @@ export const getAll = async (req: Request, res: Response) => {
     }
 };
 
-// TODO
 export const deleteOne = async (req: Request, res: Response) => {
     const { id } = req.params;
+    try {
+        const date = await AvailableDate.findByIdAndDelete(id);
+        res.status(200).json(date);
+    } catch (error) {
+        res.status(400).send({ error: 'Bad request' });
+    }
 };
 
 export const deleteMany = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { ids } = req.body;
+    try {
+        const dates = await Promise.all(
+            ids.map((id: number) => AvailableDate.findByIdAndDelete(id))
+        );
+
+        res.status(200).json(dates);
+    } catch (error) {
+        res.status(400).send({ error: 'Bad request' });
+    }
 };
