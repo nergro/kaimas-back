@@ -9,8 +9,10 @@ import { AvailableDate } from '../models/availableDate';
 
 export const create = async (req: Request, res: Response) => {
     const {
-        name,
-        description,
+        nameLT,
+        nameEN,
+        descriptionLT,
+        descriptionEN,
         price,
         category,
         capacity,
@@ -31,8 +33,10 @@ export const create = async (req: Request, res: Response) => {
             )
         );
         const activity = new Activity({
-            name,
-            description,
+            nameLT,
+            nameEN,
+            descriptionLT,
+            descriptionEN,
             price,
             capacity,
             category,
@@ -42,14 +46,17 @@ export const create = async (req: Request, res: Response) => {
         await activity.save();
         res.status(200).json(activity);
     } catch (error) {
+        console.log(error);
         res.status(400).send({ error: 'Bad request' });
     }
 };
 
 export const edit = async (req: Request, res: Response) => {
     const {
-        name,
-        description,
+        nameLT,
+        nameEN,
+        descriptionLT,
+        descriptionEN,
         price,
         capacity,
         category,
@@ -78,8 +85,10 @@ export const edit = async (req: Request, res: Response) => {
             );
 
             const update = {
-                name,
-                description,
+                nameLT,
+                nameEN,
+                descriptionLT,
+                descriptionEN,
                 price,
                 capacity,
                 category,
@@ -139,8 +148,10 @@ export const getOne = async (req: Request, res: Response) => {
         if (activity) {
             res.status(200).json({
                 id: activity.id,
-                name: activity.name,
-                description: activity.description,
+                nameLT: activity.nameLT,
+                nameEN: activity.nameEN,
+                descriptionLT: activity.descriptionLT,
+                descriptionEN: activity.descriptionEN,
                 price: activity.price,
                 capacity: activity.capacity,
                 category: activity.category,

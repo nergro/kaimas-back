@@ -4,11 +4,19 @@ import { ActivityType } from '../types/activity';
 const Schema = mongoose.Schema;
 
 const ActivitySchema = new Schema({
-    name: {
+    nameLT: {
         type: String,
         required: true
     },
-    description: {
+    nameEN: {
+        type: String,
+        required: true
+    },
+    descriptionLT: {
+        type: String,
+        required: true
+    },
+    descriptionEN: {
         type: String,
         required: true
     },

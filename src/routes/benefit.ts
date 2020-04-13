@@ -8,14 +8,16 @@ export const router: Router = express.Router();
 
 router.post(
     '/',
-    check('description', 'Description is required').exists(),
+    check('descriptionLT', 'LT Description is required').exists(),
+    check('descriptionEN', 'EN Description is required').exists(),
     isManager,
     controller.create
 );
 
 router.put(
     '/:id',
-    check('description', 'Description is required').exists(),
+    check('descriptionLT', 'LT Description is required').exists(),
+    check('descriptionEN', 'EN Description is required').exists(),
     isManager,
     controller.edit
 );

@@ -4,7 +4,11 @@ import { BenefitType } from '../types/benefit';
 const Schema = mongoose.Schema;
 
 const BenefitSchema = new Schema({
-    description: {
+    descriptionLT: {
+        type: String,
+        required: true
+    },
+    descriptionEN: {
         type: String,
         required: true
     }

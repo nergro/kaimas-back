@@ -9,14 +9,16 @@ export const router: Router = express.Router();
 router.post(
     '/',
     isManager,
-    check('name', 'Name is required').exists(),
+    check('nameLT', 'LT Name is required').exists(),
+    check('nameEN', 'EN Name is required').exists(),
     controller.create
 );
 
 router.put(
     '/:id',
     isManager,
-    check('name', 'Name is required').exists(),
+    check('nameLT', 'LT Name is required').exists(),
+    check('nameEN', 'EN Name is required').exists(),
     controller.edit
 );
 

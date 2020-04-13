@@ -10,8 +10,10 @@ import { Benefit } from '../models/benefit';
 
 export const create = async (req: Request, res: Response) => {
     const {
-        name,
-        description,
+        nameLT,
+        nameEN,
+        descriptionLT,
+        descriptionEN,
         price,
         capacity,
         images,
@@ -31,8 +33,10 @@ export const create = async (req: Request, res: Response) => {
             )
         );
         const cabin = new Cabin({
-            name,
-            description,
+            nameLT,
+            nameEN,
+            descriptionLT,
+            descriptionEN,
             price,
             capacity,
             images: imageModels,
@@ -48,8 +52,10 @@ export const create = async (req: Request, res: Response) => {
 
 export const edit = async (req: Request, res: Response) => {
     const {
-        name,
-        description,
+        nameLT,
+        nameEN,
+        descriptionLT,
+        descriptionEN,
         price,
         capacity,
         images,
@@ -76,8 +82,10 @@ export const edit = async (req: Request, res: Response) => {
             );
 
             const update = {
-                name,
-                description,
+                nameLT,
+                nameEN,
+                descriptionLT,
+                descriptionEN,
                 price,
                 capacity,
                 images: imageModels,
@@ -133,8 +141,10 @@ export const getOne = async (req: Request, res: Response) => {
         if (cabin) {
             res.status(200).json({
                 id: cabin.id,
-                name: cabin.name,
-                description: cabin.description,
+                nameLT: cabin.nameLT,
+                nameEN: cabin.nameEN,
+                descriptionLT: cabin.descriptionLT,
+                descriptionEN: cabin.descriptionEN,
                 price: cabin.price,
                 capacity: cabin.capacity,
                 images: images.map((x) => ({

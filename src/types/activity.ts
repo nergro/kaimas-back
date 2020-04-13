@@ -5,8 +5,10 @@ export type ActivityCategory = 'water' | 'active' | 'relax';
 
 export interface ActivityType extends Document {
     id: string;
-    name: string;
-    description: string;
+    nameLT: string;
+    nameEN: string;
+    descriptionLT: string;
+    descriptionEN: string;
     price: number;
     capacity: number;
     category: string;

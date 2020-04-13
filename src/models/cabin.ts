@@ -4,11 +4,19 @@ import { CabinType } from '../types/cabin';
 const Schema = mongoose.Schema;
 
 const CabinSchema = new Schema({
-    name: {
+    nameLT: {
         type: String,
         required: true
     },
-    description: {
+    nameEN: {
+        type: String,
+        required: true
+    },
+    descriptionLT: {
+        type: String,
+        required: true
+    },
+    descriptionEN: {
         type: String,
         required: true
     },

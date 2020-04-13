@@ -3,8 +3,10 @@ import { ImageType } from './image';
 
 export interface CabinType extends Document {
     id: string;
-    name: string;
-    description: string;
+    nameLT: string;
+    descriptionLT: string;
+    nameEN: string;
+    descriptionEN: string;
     price: number;
     capacity: number;
     images: ImageType[];

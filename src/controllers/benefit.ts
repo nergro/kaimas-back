@@ -9,9 +9,9 @@ export const create = async (req: Request, res: Response) => {
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
-    const { description } = req.body as BenefitType;
+    const { descriptionLT, descriptionEN } = req.body as BenefitType;
     try {
-        const benefit = new Benefit({ description });
+        const benefit = new Benefit({ descriptionLT, descriptionEN });
         await benefit.save();
         res.status(200).json(benefit);
     } catch (error) {
@@ -24,13 +24,14 @@ export const edit = async (req: Request, res: Response) => {
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
-    const { description } = req.body as BenefitType;
+    const { descriptionLT, descriptionEN } = req.body as BenefitType;
     const { id } = req.params;
     try {
         const benefit = await Benefit.findById(id);
         if (benefit) {
             const update = {
-                description
+                descriptionLT,
+                descriptionEN
             };
             await Benefit.findByIdAndUpdate(id, update);
             res.status(200).send({ msg: 'Benefit updated' });

@@ -8,8 +8,10 @@ export const router: Router = express.Router();
 
 router.post(
     '/',
-    check('name', 'Name is required').exists(),
-    check('description', 'Description is required').exists(),
+    check('nameLT', 'LT Name is required').exists(),
+    check('nameEN', 'EN Name is required').exists(),
+    check('descriptionLT', 'LT Description is required').exists(),
+    check('descriptionEN', 'EN Description is required').exists(),
     check('price', 'Price is required').exists(),
     check('capacity', 'Capacity is required').exists(),
     isManager,
@@ -18,8 +20,10 @@ router.post(
 
 router.put(
     '/:id',
-    check('name', 'Name is required').exists(),
-    check('description', 'Description is required').exists(),
+    check('nameLT', 'LT Name is required').exists(),
+    check('nameEN', 'EN Name is required').exists(),
+    check('descriptionLT', 'LT Description is required').exists(),
+    check('descriptionEN', 'EN Description is required').exists(),
     check('price', 'Price is required').exists(),
     check('capacity', 'Capacity is required').exists(),
     isManager,

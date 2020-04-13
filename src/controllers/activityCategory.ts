@@ -9,9 +9,9 @@ export const create = async (req: Request, res: Response) => {
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
-    const { name } = req.body as ActivityCategoryType;
+    const { nameLT, nameEN } = req.body as ActivityCategoryType;
     try {
-        const activityCategory = new ActivityCategory({ name });
+        const activityCategory = new ActivityCategory({ nameLT, nameEN });
         await activityCategory.save();
         res.status(200).json(activityCategory);
     } catch (error) {
@@ -24,13 +24,14 @@ export const edit = async (req: Request, res: Response) => {
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
-    const { name } = req.body as ActivityCategoryType;
+    const { nameLT, nameEN } = req.body as ActivityCategoryType;
     const { id } = req.params;
     try {
         const activityCategory = await ActivityCategory.findById(id);
         if (activityCategory) {
             const update = {
-                name
+                nameLT,
+                nameEN
             };
             await ActivityCategory.findByIdAndUpdate(id, update);
             res.status(200).send({ msg: 'Activity category updated' });
