@@ -2,11 +2,10 @@ import { Request, Response } from 'express';
 import { Cabin } from '../models/cabin';
 import { Image } from '../models/image';
 import { AvailableDate } from '../models/availableDate';
-import { CabinType } from '../types/cabin';
+import { CabinType, CabinListType } from '../types/cabin';
 import { validationResult } from 'express-validator';
 import { QueryParams } from '../types/queryParams';
 import cloudinary from 'cloudinary';
-import { Benefit } from '../models/benefit';
 
 export const create = async (req: Request, res: Response) => {
     const {
@@ -17,13 +16,15 @@ export const create = async (req: Request, res: Response) => {
         price,
         capacity,
         images,
-        benefits
+        benefits,
+        thumbnail
     } = req.body as CabinType;
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
+
         const imageModels = await Promise.all(
             images.map((image) =>
                 new Image({
@@ -32,6 +33,12 @@ export const create = async (req: Request, res: Response) => {
                 }).save()
             )
         );
+
+        const thumbnailModel = await new Image({
+            imageUrl: thumbnail.imageUrl,
+            imageId: thumbnail.imageId
+        }).save();
+
         const cabin = new Cabin({
             nameLT,
             nameEN,
@@ -40,6 +47,7 @@ export const create = async (req: Request, res: Response) => {
             price,
             capacity,
             images: imageModels,
+            thumbnail: thumbnailModel,
             benefits
         });
         await cabin.save();
@@ -59,7 +67,8 @@ export const edit = async (req: Request, res: Response) => {
         price,
         capacity,
         images,
-        benefits
+        benefits,
+        thumbnail
     } = req.body as CabinType;
     const { id } = req.params;
     try {
@@ -80,6 +89,15 @@ export const edit = async (req: Request, res: Response) => {
                     }).save()
                 )
             );
+            const deletedThumbnail = await Image.findByIdAndDelete(
+                cabin.thumbnail
+            );
+            deletedThumbnail && removeImage(deletedThumbnail.imageId);
+
+            const thumbnailModel = await new Image({
+                imageUrl: thumbnail.imageUrl,
+                imageId: thumbnail.imageId
+            });
 
             const update = {
                 nameLT,
@@ -89,7 +107,8 @@ export const edit = async (req: Request, res: Response) => {
                 price,
                 capacity,
                 images: imageModels,
-                benefits
+                benefits,
+                thumbnail: thumbnailModel
             };
             await Cabin.findByIdAndUpdate(id, update);
             res.status(200).send({ msg: 'Cabin updated' });
@@ -101,7 +120,7 @@ export const edit = async (req: Request, res: Response) => {
     }
 };
 
-export const getAll = async (req: Request, res: Response) => {
+export const getList = async (req: Request, res: Response) => {
     try {
         const { order, page, perPage, sort } = req.query as QueryParams;
 
@@ -123,6 +142,16 @@ export const getAll = async (req: Request, res: Response) => {
     }
 };
 
+export const getAll = async (req: Request, res: Response) => {
+    try {
+        const cabins = await Cabin.find().populate('thumbnail');
+
+        res.status(200).json(cabins);
+    } catch (error) {
+        res.status(400).send({ error: 'Bad request' });
+    }
+};
+
 export const getOne = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
@@ -138,6 +167,8 @@ export const getOne = async (req: Request, res: Response) => {
 
         const availableDates = await AvailableDate.find({ serviceId: id });
 
+        const t = cabin && (await Image.findById(cabin.thumbnail));
+
         if (cabin) {
             res.status(200).json({
                 id: cabin.id,
@@ -152,12 +183,17 @@ export const getOne = async (req: Request, res: Response) => {
                     imageId: x ? x.imageId : ''
                 })),
                 availableDates: availableDates.map((date) => date.id),
-                benefits: cabin.benefits
+                benefits: cabin.benefits,
+                thumbnail: {
+                    imageUrl: t ? t.imageUrl : '',
+                    imageId: t ? t.imageId : ''
+                }
             });
         } else {
             res.status(404).json({ msg: 'Cabin not found' });
         }
     } catch (error) {
+        console.log(error);
         res.status(400).send({ error: 'Bad request' });
     }
 };
@@ -175,6 +211,8 @@ export const deleteOne = async (req: Request, res: Response) => {
             deletedOldImages.forEach((image) => {
                 image && removeImage(image.imageId);
             });
+
+            await Image.findByIdAndDelete(cabin.thumbnail);
 
             res.status(200).json(cabin);
         } else {
@@ -201,6 +239,7 @@ export const deleteMany = async (req: Request, res: Response) => {
                 deletedOldImages.forEach((image) => {
                     image && removeImage(image.imageId);
                 });
+                await Image.findByIdAndDelete(cabin.thumbnail);
             }
         });
 

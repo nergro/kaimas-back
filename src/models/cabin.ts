@@ -28,6 +28,11 @@ const CabinSchema = new Schema({
         type: Number,
         required: true
     },
+    thumbnail: {
+        type: Schema.Types.ObjectId,
+        ref: 'Image',
+        required: true
+    },
     images: [
         {
             type: Schema.Types.ObjectId,

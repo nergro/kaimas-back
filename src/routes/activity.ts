@@ -14,6 +14,7 @@ router.post(
     check('descriptionEN', 'EN Description is required').exists(),
     check('price', 'Price is required').exists(),
     check('capacity', 'Capacity is required').exists(),
+    check('thumbnail', 'Thumbnail is required').exists(),
     isManager,
     controller.create
 );
@@ -26,11 +27,14 @@ router.put(
     check('descriptionEN', 'EN Description is required').exists(),
     check('price', 'Price is required').exists(),
     check('capacity', 'Capacity is required').exists(),
+    check('thumbnail', 'Thumbnail is required').exists(),
     isManager,
     controller.edit
 );
 
-router.get('/', controller.getAll);
+router.get('/', controller.getList);
+
+router.get('/all', controller.getAll);
 
 router.get('/:id', controller.getOne);
 

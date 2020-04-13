@@ -17,13 +17,19 @@ export const create = async (req: Request, res: Response) => {
         category,
         capacity,
         images,
-        benefits
+        benefits,
+        thumbnail
     } = req.body as ActivityType;
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
+        const thumbnailModel = await new Image({
+            imageUrl: thumbnail.imageUrl,
+            imageId: thumbnail.imageId
+        }).save();
+
         const imageModels = await Promise.all(
             images.map((image) =>
                 new Image({
@@ -41,6 +47,7 @@ export const create = async (req: Request, res: Response) => {
             capacity,
             category,
             images: imageModels,
+            thumbnail: thumbnailModel,
             benefits
         });
         await activity.save();
@@ -61,7 +68,8 @@ export const edit = async (req: Request, res: Response) => {
         capacity,
         category,
         images,
-        benefits
+        benefits,
+        thumbnail
     } = req.body as ActivityType;
     const { id } = req.params;
     try {
@@ -74,6 +82,10 @@ export const edit = async (req: Request, res: Response) => {
             await Promise.all(
                 activity.images.map((image) => Image.findByIdAndDelete(image))
             );
+            const deletedThumbnail = await Image.findByIdAndDelete(
+                activity.thumbnail
+            );
+            deletedThumbnail && removeImage(deletedThumbnail.imageId);
 
             const imageModels = await Promise.all(
                 images.map((image) =>
@@ -84,6 +96,11 @@ export const edit = async (req: Request, res: Response) => {
                 )
             );
 
+            const thumbnailModel = await new Image({
+                imageUrl: thumbnail.imageUrl,
+                imageId: thumbnail.imageId
+            });
+
             const update = {
                 nameLT,
                 nameEN,
@@ -93,7 +110,8 @@ export const edit = async (req: Request, res: Response) => {
                 capacity,
                 category,
                 images: imageModels,
-                benefits
+                benefits,
+                thumbnail: thumbnailModel
             };
             await Activity.findByIdAndUpdate(id, update);
             res.status(200).send({ msg: 'Activity updated' });
@@ -105,7 +123,7 @@ export const edit = async (req: Request, res: Response) => {
     }
 };
 
-export const getAll = async (req: Request, res: Response) => {
+export const getList = async (req: Request, res: Response) => {
     try {
         const { order, page, perPage, sort } = req.query as QueryParams;
 
@@ -130,6 +148,16 @@ export const getAll = async (req: Request, res: Response) => {
     }
 };
 
+export const getAll = async (req: Request, res: Response) => {
+    try {
+        const activities = await Activity.find().populate('thumbnail');
+
+        res.status(200).json(activities);
+    } catch (error) {
+        res.status(400).send({ error: 'Bad request' });
+    }
+};
+
 export const getOne = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
@@ -144,6 +172,8 @@ export const getOne = async (req: Request, res: Response) => {
                 : [];
 
         const availableDates = await AvailableDate.find({ serviceId: id });
+
+        const t = activity && (await Image.findById(activity.thumbnail));
 
         if (activity) {
             res.status(200).json({
@@ -160,10 +190,14 @@ export const getOne = async (req: Request, res: Response) => {
                     imageId: x ? x.imageId : ''
                 })),
                 availableDates: availableDates.map((date) => date.id),
-                benefits: activity.benefits
+                benefits: activity.benefits,
+                thumbnail: {
+                    imageUrl: t ? t.imageUrl : '',
+                    imageId: t ? t.imageId : ''
+                }
             });
         } else {
-            res.status(404).json({ msg: 'Cabin not found' });
+            res.status(404).json({ msg: 'Activity not found' });
         }
     } catch (error) {
         res.status(400).send({ error: 'Bad request' });
@@ -183,6 +217,8 @@ export const deleteOne = async (req: Request, res: Response) => {
             deletedOldImages.forEach((image) => {
                 image && removeImage(image.imageId);
             });
+
+            await Image.findByIdAndDelete(activity.thumbnail);
 
             res.status(200).json(activity);
         } else {
@@ -211,6 +247,7 @@ export const deleteMany = async (req: Request, res: Response) => {
                 deletedOldImages.forEach((image) => {
                     image && removeImage(image.imageId);
                 });
+                await Image.findByIdAndDelete(activity.thumbnail);
             }
         });
 

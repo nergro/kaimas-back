@@ -12,6 +12,7 @@ export interface ActivityType extends Document {
     price: number;
     capacity: number;
     category: string;
+    thumbnail: ImageType;
     images: ImageType[];
     benefits: string[];
 }
