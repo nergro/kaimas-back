@@ -34,7 +34,6 @@ export const create = async (req: Request, res: Response) => {
                 }).save()
             )
         );
-
         const thumbnailModel = await new Image({
             imageUrl: thumbnail.imageUrl,
             imageId: thumbnail.imageId
@@ -92,15 +91,13 @@ export const edit = async (req: Request, res: Response) => {
                     }).save()
                 )
             );
-            const deletedThumbnail = await Image.findByIdAndDelete(
-                cabin.thumbnail
-            );
-            deletedThumbnail && removeImage(deletedThumbnail.imageId);
+
+            await Image.findByIdAndDelete(cabin.thumbnail);
 
             const thumbnailModel = await new Image({
                 imageUrl: thumbnail.imageUrl,
                 imageId: thumbnail.imageId
-            });
+            }).save();
 
             const update = {
                 nameLT,
@@ -150,7 +147,8 @@ export const getAll = async (req: Request, res: Response) => {
     try {
         const cabins = await Cabin.find()
             .populate('thumbnail')
-            .populate('images');
+            .populate('images')
+            .populate('benefits');
 
         res.status(200).json(cabins);
     } catch (error) {

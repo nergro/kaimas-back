@@ -77,3 +77,33 @@ export const sendPasswordToManager = async (
 
     await transporter.sendMail(mailOptions);
 };
+
+export const sendSubscribtionCancellationToken = async (
+    mail: string,
+    url: string
+): Promise<void> => {
+    const mailOptions: MailOptions = getMailOptions(
+        `<h1>Welcome!</h1>
+        <p><strong>You have subscribed to our newsletter</strong><p>
+        <p><strong>If you would like to cancel it just click on this <a href="${url}">Link</a>: </strong></p>
+        `,
+        'Welcome',
+        mail
+    );
+
+    await transporter.sendMail(mailOptions);
+};
+
+export const sendSubscribtionCancellationConfirmation = async (
+    mail: string
+): Promise<void> => {
+    const mailOptions: MailOptions = getMailOptions(
+        `<h1>Cancelled!</h1>
+        <p><strong>You have cancelled subscription to our newsletter</strong><p>
+        `,
+        'Cancelled',
+        mail
+    );
+
+    await transporter.sendMail(mailOptions);
+};

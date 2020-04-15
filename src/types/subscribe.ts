@@ -7,4 +7,5 @@ export interface SubscriberType extends Document {
 
 export interface SubscribeJWTPayload {
     id: string;
+    email: string;
 }

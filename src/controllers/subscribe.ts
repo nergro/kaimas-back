@@ -4,6 +4,10 @@ import { Subscriber } from '../models/subscriber';
 import jwt from 'jsonwebtoken';
 import { getEnvironmentVariableString } from '../services/environmentVariable';
 import { SubscribeJWTPayload } from '../types/subscribe';
+import {
+    sendSubscribtionCancellationToken,
+    sendSubscribtionCancellationConfirmation
+} from '../services/mailer';
 
 export const subscribe = async (req: Request, res: Response) => {
     const errors = validationResult(req);
@@ -21,7 +25,10 @@ export const subscribe = async (req: Request, res: Response) => {
         subscriber = new Subscriber({ email });
         await subscriber.save();
 
-        const payload: SubscribeJWTPayload = { id: subscriber.id };
+        const payload: SubscribeJWTPayload = {
+            id: subscriber.id,
+            email: subscriber.email
+        };
 
         jwt.sign(
             payload,
@@ -29,7 +36,11 @@ export const subscribe = async (req: Request, res: Response) => {
             {},
             (err, token) => {
                 if (err) throw err;
-                res.json({ cancellationToken: token });
+                const url = `${getEnvironmentVariableString(
+                    'FRONT_URL'
+                )}/subscribtion/${token}`;
+                sendSubscribtionCancellationToken(email, url);
+                res.status(200).json('Success');
             }
         );
     } catch (error) {
@@ -46,6 +57,7 @@ export const cancel = async (req: Request, res: Response) => {
         ) as SubscribeJWTPayload;
         const subscriber = await Subscriber.findByIdAndDelete(decoded.id);
         if (subscriber) {
+            sendSubscribtionCancellationConfirmation(decoded.email);
             return res.status(200).json('Subscribtion cancelled');
         } else {
             res.status(400).send({ error: 'Bad request' });

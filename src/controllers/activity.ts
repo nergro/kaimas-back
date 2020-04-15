@@ -86,10 +86,7 @@ export const edit = async (req: Request, res: Response) => {
             await Promise.all(
                 activity.images.map((image) => Image.findByIdAndDelete(image))
             );
-            const deletedThumbnail = await Image.findByIdAndDelete(
-                activity.thumbnail
-            );
-            deletedThumbnail && removeImage(deletedThumbnail.imageId);
+            await Image.findByIdAndDelete(activity.thumbnail);
 
             const imageModels = await Promise.all(
                 images.map((image) =>
@@ -103,7 +100,7 @@ export const edit = async (req: Request, res: Response) => {
             const thumbnailModel = await new Image({
                 imageUrl: thumbnail.imageUrl,
                 imageId: thumbnail.imageId
-            });
+            }).save();
 
             const update = {
                 nameLT,
@@ -157,7 +154,8 @@ export const getAll = async (req: Request, res: Response) => {
     try {
         const activities = await Activity.find()
             .populate('thumbnail')
-            .populate('images');
+            .populate('images')
+            .populate('benefits');
 
         res.status(200).json(activities);
     } catch (error) {
