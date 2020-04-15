@@ -32,6 +32,10 @@ const ActivitySchema = new Schema({
         type: Number,
         required: true
     },
+    address: {
+        type: String,
+        required: true
+    },
     thumbnail: {
         type: Schema.Types.ObjectId,
         ref: 'Image',

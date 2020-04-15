@@ -9,6 +9,7 @@ export interface CabinType extends Document {
     descriptionEN: string;
     price: number;
     capacity: number;
+    address: string;
     thumbnail: ImageType;
     images: ImageType[];
     benefits: string[];

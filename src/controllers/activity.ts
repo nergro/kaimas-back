@@ -18,8 +18,10 @@ export const create = async (req: Request, res: Response) => {
         capacity,
         images,
         benefits,
+        address,
         thumbnail
     } = req.body as ActivityType;
+    console.log(address);
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -45,6 +47,7 @@ export const create = async (req: Request, res: Response) => {
             descriptionEN,
             price,
             capacity,
+            address,
             category,
             images: imageModels,
             thumbnail: thumbnailModel,
@@ -66,6 +69,7 @@ export const edit = async (req: Request, res: Response) => {
         descriptionEN,
         price,
         capacity,
+        address,
         category,
         images,
         benefits,
@@ -108,6 +112,7 @@ export const edit = async (req: Request, res: Response) => {
                 descriptionEN,
                 price,
                 capacity,
+                address,
                 category,
                 images: imageModels,
                 benefits,
@@ -150,7 +155,9 @@ export const getList = async (req: Request, res: Response) => {
 
 export const getAll = async (req: Request, res: Response) => {
     try {
-        const activities = await Activity.find().populate('thumbnail');
+        const activities = await Activity.find()
+            .populate('thumbnail')
+            .populate('images');
 
         res.status(200).json(activities);
     } catch (error) {
@@ -184,6 +191,7 @@ export const getOne = async (req: Request, res: Response) => {
                 descriptionEN: activity.descriptionEN,
                 price: activity.price,
                 capacity: activity.capacity,
+                address: activity.address,
                 category: activity.category,
                 images: images.map((x) => ({
                     imageUrl: x ? x.imageUrl : '',

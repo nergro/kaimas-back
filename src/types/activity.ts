@@ -11,6 +11,7 @@ export interface ActivityType extends Document {
     descriptionEN: string;
     price: number;
     capacity: number;
+    address: string;
     category: string;
     thumbnail: ImageType;
     images: ImageType[];

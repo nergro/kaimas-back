@@ -15,6 +15,7 @@ export const create = async (req: Request, res: Response) => {
         descriptionEN,
         price,
         capacity,
+        address,
         images,
         benefits,
         thumbnail
@@ -46,6 +47,7 @@ export const create = async (req: Request, res: Response) => {
             descriptionEN,
             price,
             capacity,
+            address,
             images: imageModels,
             thumbnail: thumbnailModel,
             benefits
@@ -66,6 +68,7 @@ export const edit = async (req: Request, res: Response) => {
         descriptionEN,
         price,
         capacity,
+        address,
         images,
         benefits,
         thumbnail
@@ -106,6 +109,7 @@ export const edit = async (req: Request, res: Response) => {
                 descriptionEN,
                 price,
                 capacity,
+                address,
                 images: imageModels,
                 benefits,
                 thumbnail: thumbnailModel
@@ -144,7 +148,9 @@ export const getList = async (req: Request, res: Response) => {
 
 export const getAll = async (req: Request, res: Response) => {
     try {
-        const cabins = await Cabin.find().populate('thumbnail');
+        const cabins = await Cabin.find()
+            .populate('thumbnail')
+            .populate('images');
 
         res.status(200).json(cabins);
     } catch (error) {
@@ -178,6 +184,7 @@ export const getOne = async (req: Request, res: Response) => {
                 descriptionEN: cabin.descriptionEN,
                 price: cabin.price,
                 capacity: cabin.capacity,
+                address: cabin.address,
                 images: images.map((x) => ({
                     imageUrl: x ? x.imageUrl : '',
                     imageId: x ? x.imageId : ''

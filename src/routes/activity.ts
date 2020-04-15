@@ -14,6 +14,7 @@ router.post(
     check('descriptionEN', 'EN Description is required').exists(),
     check('price', 'Price is required').exists(),
     check('capacity', 'Capacity is required').exists(),
+    check('address', 'Address is required').exists(),
     check('thumbnail', 'Thumbnail is required').exists(),
     isManager,
     controller.create
@@ -27,6 +28,7 @@ router.put(
     check('descriptionEN', 'EN Description is required').exists(),
     check('price', 'Price is required').exists(),
     check('capacity', 'Capacity is required').exists(),
+    check('address', 'Address is required').exists(),
     check('thumbnail', 'Thumbnail is required').exists(),
     isManager,
     controller.edit
