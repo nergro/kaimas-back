@@ -7,3 +7,4 @@ export { router as benefit } from './benefit';
 export { router as activity } from './activity';
 export { router as activityCategory } from './activityCategory';
 export { router as newsletter } from './newsletter';
+export { router as review } from './review';

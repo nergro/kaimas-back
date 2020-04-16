@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Cabin } from '../models/cabin';
 import { Image } from '../models/image';
 import { AvailableDate } from '../models/availableDate';
-import { CabinType, CabinListType } from '../types/cabin';
+import { CabinType } from '../types/cabin';
 import { validationResult } from 'express-validator';
 import { QueryParams } from '../types/queryParams';
 import cloudinary from 'cloudinary';

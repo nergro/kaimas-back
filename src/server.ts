@@ -40,6 +40,7 @@ app.use('/api/benefit', router.benefit);
 app.use('/api/activity', router.activity);
 app.use('/api/activityCategory', router.activityCategory);
 app.use('/api/newsletter', router.newsletter);
+app.use('/api/review', router.review);
 
 app.all('*', (req, res) => {
     res.status(404).json({ error: "Endpoint doesn't exist" });

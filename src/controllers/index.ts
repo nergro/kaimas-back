@@ -7,6 +7,7 @@ import * as benefitController from './benefit';
 import * as activityController from './activity';
 import * as activityCategoryController from './activityCategory';
 import * as newsletterController from './newsletter';
+import * as reviewController from './review';
 
 export {
     clientController,
@@ -17,5 +18,6 @@ export {
     benefitController,
     activityController,
     activityCategoryController,
-    newsletterController
+    newsletterController,
+    reviewController
 };
