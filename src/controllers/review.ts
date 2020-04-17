@@ -15,6 +15,7 @@ export const create = async (req: Request, res: Response) => {
     } = req.body as ReviewRequestBody;
     try {
         if (req.user === undefined) {
+            console.log(req.user);
             return res.status(401).send('Unauthorized');
         }
         const errors = validationResult(req);

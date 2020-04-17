@@ -32,7 +32,6 @@ export const isManager = async (
             res.status(401).send({ msg: 'Unauthorized action' });
         }
     } catch (error) {
-        // console.log(error);
         res.status(401).json({ msg: 'Token is not valid' });
     }
 };
