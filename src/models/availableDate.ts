@@ -17,6 +17,14 @@ const AvailableDateSchema = new Schema({
     date: {
         type: Date,
         required: true
+    },
+    isReserved: {
+        type: Boolean,
+        default: false
+    },
+    reservedUserId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
     }
 });
 

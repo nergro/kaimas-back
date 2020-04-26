@@ -8,6 +8,7 @@ import * as activityController from './activity';
 import * as activityCategoryController from './activityCategory';
 import * as newsletterController from './newsletter';
 import * as reviewController from './review';
+import * as orderController from './order';
 
 export {
     clientController,
@@ -19,5 +20,6 @@ export {
     activityController,
     activityCategoryController,
     newsletterController,
-    reviewController
+    reviewController,
+    orderController
 };

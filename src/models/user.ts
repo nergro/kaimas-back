@@ -24,6 +24,10 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
+    hasReservation: {
+        type: Boolean,
+        default: false
+    },
     userType: {
         type: String,
         required: true,

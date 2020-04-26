@@ -3,6 +3,7 @@ import { AvailableDate } from '../models/availableDate';
 import { AvailableDateRequestBody } from '../types/availableDate';
 import { QueryParams } from '../types/queryParams';
 import { validationResult } from 'express-validator';
+import moment from 'moment';
 
 export const create = async (req: Request, res: Response) => {
     const {
@@ -15,8 +16,26 @@ export const create = async (req: Request, res: Response) => {
         return res.status(400).json({ errors: errors.array() });
     }
     try {
+        const oldDates = await AvailableDate.find({ serviceId });
+
+        const filteredDateChunks: string[] = [];
+        dateChunks.forEach((x) => {
+            let exist = false;
+            oldDates.forEach((y) => {
+                if (
+                    moment(x).format('YYYY-MM-DD') ===
+                    moment(y.date).format('YYYY-MM-DD')
+                ) {
+                    exist = true;
+                }
+            });
+            if (!exist) {
+                filteredDateChunks.push(x);
+            }
+        });
+
         const dates = await Promise.all(
-            dateChunks.map((date) =>
+            filteredDateChunks.map((date) =>
                 new AvailableDate({
                     serviceId,
                     date,
@@ -36,6 +55,19 @@ export const getOne = async (req: Request, res: Response) => {
     try {
         const aDate = await AvailableDate.findById(id);
         res.status(200).send(aDate);
+    } catch (error) {
+        res.status(400).send({ error: 'Bad request' });
+    }
+};
+
+export const getByServiceId = async (req: Request, res: Response) => {
+    const { serviceId } = req.params;
+    try {
+        const dates = await AvailableDate.find({
+            serviceId,
+            isReserved: false
+        });
+        res.status(200).send(dates);
     } catch (error) {
         res.status(400).send({ error: 'Bad request' });
     }

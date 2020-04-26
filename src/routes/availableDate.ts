@@ -2,9 +2,15 @@ import express, { Router } from 'express';
 
 import { availableDateController as controller } from '../controllers';
 import { check } from 'express-validator';
-import { isManager } from '../middleware';
+import { isManager, isAuth } from '../middleware';
 
 export const router: Router = express.Router();
+
+router.get('/', controller.getAll);
+
+router.get('/:id', controller.getOne);
+
+router.get('/:serviceId/service', controller.getByServiceId);
 
 router.post(
     '/',
@@ -14,10 +20,6 @@ router.post(
     isManager,
     controller.create
 );
-
-router.get('/', controller.getAll);
-
-router.get('/:id', controller.getOne);
 
 router.delete('/:id', isManager, controller.deleteOne);
 

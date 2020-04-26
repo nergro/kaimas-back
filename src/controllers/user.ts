@@ -56,7 +56,10 @@ export const register = async (req: Request, res: Response) => {
             { expiresIn: getEnvironmentVariableString('JWT_EXPIRETIME') },
             (err, token) => {
                 if (err) throw err;
-                res.json({ token });
+                res.json({
+                    token,
+                    hasReservation: user ? user.hasReservation : false
+                });
             }
         );
     } catch (error) {
@@ -140,7 +143,8 @@ export const login = async (req: Request, res: Response) => {
                     id: user.id,
                     name: user.name,
                     userType: user.userType,
-                    token
+                    token,
+                    hasReservation: user.hasReservation
                 });
             }
         );

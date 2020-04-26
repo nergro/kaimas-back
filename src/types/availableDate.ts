@@ -5,6 +5,8 @@ export interface AvailableDateType extends Document {
     serviceId: string;
     onModel: string;
     date: string;
+    isReserved: boolean;
+    reservedUserId?: string;
 }
 
 export interface AvailableDateRequestBody {

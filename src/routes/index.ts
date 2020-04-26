@@ -8,3 +8,4 @@ export { router as activity } from './activity';
 export { router as activityCategory } from './activityCategory';
 export { router as newsletter } from './newsletter';
 export { router as review } from './review';
+export { router as order } from './order';

@@ -41,6 +41,7 @@ app.use('/api/activity', router.activity);
 app.use('/api/activityCategory', router.activityCategory);
 app.use('/api/newsletter', router.newsletter);
 app.use('/api/review', router.review);
+app.use('/api/order', router.order);
 
 app.all('*', (req, res) => {
     res.status(404).json({ error: "Endpoint doesn't exist" });

@@ -9,6 +9,7 @@ export interface UserInterface extends Document {
     password: string;
     phone: string;
     userType: UserType;
+    hasReservation: boolean;
 }
 
 export interface UserJWTPayload {
