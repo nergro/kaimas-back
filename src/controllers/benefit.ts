@@ -53,7 +53,7 @@ export const getOne = async (req: Request, res: Response) => {
     }
 };
 
-export const getAll = async (req: Request, res: Response) => {
+export const getList = async (req: Request, res: Response) => {
     try {
         const { order, page, perPage, sort } = req.query as QueryParams;
 
@@ -70,6 +70,16 @@ export const getAll = async (req: Request, res: Response) => {
             .sort({ [sort]: order });
 
         res.status(200).json({ items: benefits, total: total.length });
+    } catch (error) {
+        res.status(400).send({ error: 'Bad request' });
+    }
+};
+
+export const getAll = async (req: Request, res: Response) => {
+    try {
+        const benefits = await Benefit.find();
+
+        res.status(200).json(benefits);
     } catch (error) {
         res.status(400).send({ error: 'Bad request' });
     }

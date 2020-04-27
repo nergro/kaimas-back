@@ -22,7 +22,9 @@ router.put(
     controller.edit
 );
 
-router.get('/', controller.getAll);
+router.get('/all', controller.getAll);
+
+router.get('/', controller.getList);
 
 router.get('/:id', controller.getOne);
 
