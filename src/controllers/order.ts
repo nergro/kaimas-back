@@ -54,7 +54,9 @@ export const get = async (req: Request, res: Response) => {
     const { id: userId } = req.user as UserInterface;
 
     try {
-        const orders = await Order.find({ userId }).populate('reservedDates');
+        const orders = await Order.find({ userId })
+            .populate('reservedDates')
+            .populate('serviceId');
         res.status(200).send(orders);
     } catch (error) {
         res.status(400).send({ error: 'Bad request' });
