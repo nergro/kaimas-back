@@ -5,6 +5,7 @@ import cors from 'cors';
 import express, { Application } from 'express';
 import morgan from 'morgan';
 import passport from 'passport';
+import helmet from 'helmet';
 
 import { logger } from './logging';
 import * as router from './routes';
@@ -25,6 +26,7 @@ cloudinary.v2.config({
 });
 
 app.use(cors());
+app.use(helmet());
 
 app.use(bodyParser.json());
 
