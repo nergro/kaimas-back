@@ -38,8 +38,6 @@ export const create = async (req: Request, res: Response) => {
             reservedDates: datesIds
         }).save();
 
-        await User.findByIdAndUpdate(userId, { hasReservation: true });
-
         res.status(200).send('Success');
     } catch (error) {
         console.log(error);

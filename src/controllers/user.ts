@@ -57,8 +57,7 @@ export const register = async (req: Request, res: Response) => {
             (err, token) => {
                 if (err) throw err;
                 res.json({
-                    token,
-                    hasReservation: user ? user.hasReservation : false
+                    token
                 });
             }
         );
@@ -143,8 +142,7 @@ export const login = async (req: Request, res: Response) => {
                     id: user.id,
                     name: user.name,
                     userType: user.userType,
-                    token,
-                    hasReservation: user.hasReservation
+                    token
                 });
             }
         );
