@@ -53,7 +53,7 @@ export const create = async (req: Request, res: Response) => {
 export const getOne = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-        const aDate = await AvailableDate.findById(id);
+        const aDate = await AvailableDate.findById(id).populate('serviceId');
         res.status(200).send(aDate);
     } catch (error) {
         res.status(400).send({ error: 'Bad request' });
@@ -85,6 +85,7 @@ export const getAll = async (req: Request, res: Response) => {
         const total = await AvailableDate.find();
 
         const dates = await AvailableDate.find()
+            .populate('serviceId')
             .skip(skip)
             .limit(parseInt(perPage))
             .sort({ [sort]: order });
