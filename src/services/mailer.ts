@@ -69,6 +69,7 @@ export const sendPasswordToManager = async (
     const mailOptions: MailOptions = getMailOptions(
         `<h1>Sveiki!</h1>
         <p><strong>Jums buvo sukurta paskyra Laikas atostogoms sistemoje</strong><p>
+        <p><strong>Prisijungimo vardas: </strong> ${mail} </p>
         <p><strong>Laikinas slaptažodis: </strong> ${password} </p>
         `,
         'Sveiki',
