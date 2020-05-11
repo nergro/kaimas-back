@@ -155,7 +155,8 @@ export const getAll = async (req: Request, res: Response) => {
         const activities = await Activity.find()
             .populate('thumbnail')
             .populate('images')
-            .populate('benefits');
+            .populate('benefits')
+            .populate('category');
 
         res.status(200).json(activities);
     } catch (error) {
