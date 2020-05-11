@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { UserInterface } from '../types/user';
-import { OrderBody } from '../types/order';
+import { OrderBody, OrderJWTPayload } from '../types/order';
 import { AvailableDate } from '../models/availableDate';
 import { Order } from '../models/order';
 import { User } from '../models/user';
@@ -47,9 +47,10 @@ export const create = async (req: Request, res: Response) => {
         const user = await User.findById(userId);
 
         if (user) {
-            const payload: SubscribeJWTPayload = {
+            const payload: OrderJWTPayload = {
                 id: order.id,
-                email: user.email
+                email: user.email,
+                datesIds: datesIds
             };
 
             jwt.sign(
@@ -96,8 +97,18 @@ export const cancel = async (req: Request, res: Response) => {
         const decoded = jwt.verify(
             token,
             getEnvironmentVariableString('JWT_SECRET')
-        ) as SubscribeJWTPayload;
+        ) as OrderJWTPayload;
         const order = await Order.findByIdAndDelete(decoded.id);
+        const availableDateUpdate = {
+            isReserved: true,
+            reservedUserId: undefined
+        };
+
+        await Promise.all(
+            decoded.datesIds.map((dateId) =>
+                AvailableDate.findByIdAndUpdate(dateId, availableDateUpdate)
+            )
+        );
         if (order) {
             sendOrderCancellationConfirmation(decoded.email);
             return res.status(200).json('Order cancelled');

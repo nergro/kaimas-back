@@ -18,3 +18,9 @@ export interface OrderBody {
     price: number;
     date: string;
 }
+
+export interface OrderJWTPayload {
+    id: string;
+    email: string;
+    datesIds: string[];
+}
