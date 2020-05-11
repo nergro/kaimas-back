@@ -18,3 +18,5 @@ router.post(
 );
 
 router.get('/', isAuth, controller.get);
+
+router.post('/:token', controller.cancel);

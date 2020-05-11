@@ -67,11 +67,11 @@ export const sendPasswordToManager = async (
     password: string
 ): Promise<void> => {
     const mailOptions: MailOptions = getMailOptions(
-        `<h1>Welcome!</h1>
-        <p><strong>You have been created by administrator</strong><p>
-        <p><strong>Your temporary password: </strong> ${password} </p>
+        `<h1>Sveiki!</h1>
+        <p><strong>Jums buvo sukurta paskyra Laikas atostogoms sistemoje</strong><p>
+        <p><strong>Laikinas slaptažodis: </strong> ${password} </p>
         `,
-        'Welcome',
+        'Sveiki',
         mail
     );
 
@@ -83,11 +83,14 @@ export const sendSubscribtionCancellationToken = async (
     url: string
 ): Promise<void> => {
     const mailOptions: MailOptions = getMailOptions(
-        `<h1>Welcome!</h1>
+        `<h1>Sveiki!</h1>
+        <p><strong>Jūs užsiprenumeravote naujienlaiškį!</strong><p>
+        <p><strong>Jei norite atšaukti, spauskite <a href="${url}">čia</a></strong></p>
+        <p></p>
         <p><strong>You have subscribed to our newsletter</strong><p>
-        <p><strong>If you would like to cancel it just click on this <a href="${url}">Link</a>: </strong></p>
+        <p><strong>If you would like to cancel it just click on this <a href="${url}">Link</a></strong></p>
         `,
-        'Welcome',
+        'Sveiki',
         mail
     );
 
@@ -98,10 +101,47 @@ export const sendSubscribtionCancellationConfirmation = async (
     mail: string
 ): Promise<void> => {
     const mailOptions: MailOptions = getMailOptions(
-        `<h1>Cancelled!</h1>
+        `<h1>Atšaukta!</h1>
+        <p><strong>Jūs sėkmingai atšaukėtė naujienlaiškį</strong><p>
+        <p></p>
         <p><strong>You have cancelled subscription to our newsletter</strong><p>
         `,
-        'Cancelled',
+        'Atšaukta',
+        mail
+    );
+
+    await transporter.sendMail(mailOptions);
+};
+
+export const sendOrderConfirmation = async (
+    mail: string,
+    url: string
+): Promise<void> => {
+    const mailOptions: MailOptions = getMailOptions(
+        `<h1>Sveiki!</h1>
+        <p><strong>Jūsų rezervacija sėkminga!</strong><p>
+        <p><strong>Jei norite atšaukti, spauskite <a href="${url}">Link</a></strong></p>
+        <p</p>
+        <p><strong>You have successfully made a reservation.</strong><p>
+        <p><strong>If you would like to cancel it just click on this <a href="${url}">Link</a></strong></p>
+        `,
+        'Sveiki',
+        mail
+    );
+
+    await transporter.sendMail(mailOptions);
+};
+
+export const sendOrderCancellationConfirmation = async (
+    mail: string
+): Promise<void> => {
+    const mailOptions: MailOptions = getMailOptions(
+        `<h1>Atšaukta!</h1>
+        <p><strong>Jūs sėkmingai atšaukėtė rezervaciją.</strong><p>
+        <p></p>
+        <p><strong>You have successfully cancelled a reservation.</strong><p>
+        `,
+        'Atšaukta',
         mail
     );
 
