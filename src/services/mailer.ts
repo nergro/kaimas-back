@@ -88,7 +88,7 @@ export const sendSubscribtionCancellationToken = async (
         <p><strong>Jei norite atšaukti, spauskite <a href="${url}">čia</a></strong></p>
         <p></p>
         <p><strong>You have subscribed to our newsletter</strong><p>
-        <p><strong>If you would like to cancel it just click on this <a href="${url}">Link</a></strong></p>
+        <p><strong>If you would like to cancel it just click on this <a href="${url}">link</a></strong></p>
         `,
         'Sveiki',
         mail
@@ -120,10 +120,10 @@ export const sendOrderConfirmation = async (
     const mailOptions: MailOptions = getMailOptions(
         `<h1>Sveiki!</h1>
         <p><strong>Jūsų rezervacija sėkminga!</strong><p>
-        <p><strong>Jei norite atšaukti, spauskite <a href="${url}">Link</a></strong></p>
+        <p><strong>Jei norite atšaukti, spauskite <a href="${url}">čia</a></strong></p>
         <p</p>
         <p><strong>You have successfully made a reservation.</strong><p>
-        <p><strong>If you would like to cancel it just click on this <a href="${url}">Link</a></strong></p>
+        <p><strong>If you would like to cancel it just click on this <a href="${url}">link</a></strong></p>
         `,
         'Sveiki',
         mail
