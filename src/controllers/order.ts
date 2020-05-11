@@ -100,7 +100,7 @@ export const cancel = async (req: Request, res: Response) => {
         ) as OrderJWTPayload;
         const order = await Order.findByIdAndDelete(decoded.id);
         const availableDateUpdate = {
-            isReserved: true,
+            isReserved: false,
             reservedUserId: undefined
         };
 
