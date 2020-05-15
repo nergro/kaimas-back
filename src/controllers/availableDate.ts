@@ -73,6 +73,19 @@ export const getByServiceId = async (req: Request, res: Response) => {
     }
 };
 
+export const getBySeviceType= async (req: Request, res: Response) => {
+    const { serviceType } = req.body;
+    try {
+        const dates = await AvailableDate.find({
+            onModel: serviceType,
+            isReserved: false
+        });
+        res.status(200).send(dates);
+    } catch (error) {
+        res.status(400).send({ error: 'Bad request' });
+    }
+};
+
 export const getAll = async (req: Request, res: Response) => {
     try {
         const { order, page, perPage, sort } = req.query as QueryParams;

@@ -12,6 +12,8 @@ router.get('/:id', controller.getOne);
 
 router.get('/:serviceId/service', controller.getByServiceId);
 
+router.get('/servicetype', check('serviceType', 'serviceType is required').exists(), controller.getBySeviceType);
+
 router.post(
     '/',
     check('serviceId', 'serviceId is required').exists(),
