@@ -12,7 +12,10 @@
         "start": "npm-run-all lint clean build --parallel watch:build watch:server --print-label",
         "start-prod": "NODE_ENV=production PORT=4001 node dist/server.js"
     },
-    "author": "",
+    "author": {
+        "name":"Nerijus Gromas",
+        "email": "nerijus.gromas@gmail.com"
+      },
     "license": "ISC",
     "devDependencies": {
         "@types/bcrypt": "^3.0.0",
